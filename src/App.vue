@@ -1,7 +1,8 @@
 <template>
   <div id="app">
-    <input @input='checkvalue' v-model='inputText' />
-    <UserList id='activeBox' v-if='showList' :list='list' @aiterName='saveName' :filterName='includeName'/>
+    <UserList id='activeBox' :showList='showList' :list='list' @aiterName='saveName' :filterName='includeName'>
+      <input slot="from-item" @input='checkvalue' v-model='inputText'/>
+    </UserList>
   </div>
 </template>
 
@@ -53,7 +54,6 @@ export default {
   },
   methods: {
     checkvalue (event) {
-      console.log(event)
       if (event.data === '@') {
         this.showList = true
         // this.getCursorSite()

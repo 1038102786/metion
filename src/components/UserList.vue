@@ -1,10 +1,11 @@
 <template>
   <div class="userlist">
-    <!-- <slot name="from-item"/> -->
-    <!-- <input/> -->
-    <div :class="['list', {'choose':chooseIndex==index}]" v-for='(item,index) in filterList' :key='index' @click='changeUser(index)'>
-      <img class='photo' :src="item.img"/>
-      <span class='name'>{{item.name}}</span>
+    <slot name="from-item"/>
+    <div class="listdom" v-if="showList">
+      <div :class="['list', {'choose':chooseIndex==index}]" v-for='(item,index) in filterList' :key='index' @click='changeUser(index)'>
+        <img class='photo' :src="item.img"/>
+        <span class='name'>{{item.name}}</span>
+      </div>
     </div>
   </div>
 </template>
@@ -12,7 +13,13 @@
 <script>
 export default {
   name: 'UserList',
-  props:['list','filterName'],
+  props:['list','filterName','showList'],
+  watch: {
+    filterName: function (val) {
+      console.log(val)
+      this.chooseIndex = 0
+    },
+  },
   computed:{
     filterList:function(){
       var self = this
@@ -27,7 +34,6 @@ export default {
     }
   },
   mounted(){
-    //document.addEventListener('keyup', this.keyboard);
     document.onkeyup = this.keyboard;
   },
   methods:{
@@ -59,6 +65,8 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang='less' scoped>
 .userlist{
+  }
+.listdom{
   max-height:200px;
   width:180px;
   overflow:auto;
