@@ -20,6 +20,7 @@ export default {
       this.chooseIndex = 0
       if(this.filterList.length === 0){
         this.show = false
+        this.$emit('aiterName','')
       }
     },
     showList: function (val) {
@@ -40,6 +41,7 @@ export default {
       show:this.showList,
     }
   },
+  //点击别处窗口消失
   created(){
       let body = document.querySelector('body')
       body.addEventListener('click',(e)=>{
@@ -83,8 +85,11 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang='less' scoped>
+.userlist{
+  position: absolute;
+
+}
 #activeBox{
-  position: relative;
   max-height:200px;
   width:180px;
   overflow:auto;
@@ -94,8 +99,6 @@ export default {
   display:flex;
   height:35px;
   .photo{
-    // height:30px;
-    // width:30px; 
     margin:3px 8px; 
     border-radius:4px;
   }

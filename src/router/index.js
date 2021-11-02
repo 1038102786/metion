@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import UserList from '@/components/UserList'
+import myInput from '@/myInput.vue'
 
 Vue.use(Router)
 
@@ -8,8 +8,8 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'UserList',
-      component: UserList
+      name: 'myInput',
+      component: myInput
     }
   ]
 })
