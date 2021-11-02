@@ -1,7 +1,7 @@
 <template>
   <div class="userlist">
     <slot name="from-item"/>
-    <div class="listdom" v-if="showList">
+    <div id="activeBox" v-if="show">
       <div :class="['list', {'choose':chooseIndex==index}]" v-for='(item,index) in filterList' :key='index' @click='changeUser(index)'>
         <img class='photo' :src="item.img"/>
         <span class='name'>{{item.name}}</span>
@@ -13,11 +13,17 @@
 <script>
 export default {
   name: 'UserList',
-  props:['list','filterName','showList'],
+  props:['list','filterName','showList','pos'],
   watch: {
     filterName: function (val) {
       console.log(val)
       this.chooseIndex = 0
+      if(this.filterList.length === 0){
+        this.show = false
+      }
+    },
+    showList: function (val) {
+      this.show = val
     },
   },
   computed:{
@@ -31,7 +37,19 @@ export default {
   data () {
     return {
       chooseIndex:0,
+      show:this.showList,
     }
+  },
+  created(){
+      let body = document.querySelector('body')
+      body.addEventListener('click',(e)=>{
+      if(e.target.id === 'activeBox'){
+          this.show = true
+      }else {
+          this.show = false
+          this.$emit('aiterName','')
+      }
+      },true)
   },
   mounted(){
     document.onkeyup = this.keyboard;
@@ -42,7 +60,8 @@ export default {
       this.$emit('aiterName',this.filterList[this.chooseIndex].name)
     },
     keyboard(e){
-      let ecode = e || event || window.event || arguments.callee.caller.arguments[0]
+      if(!this.show)return
+      let ecode = e || window.event || arguments.callee.caller.arguments[0]
       if (ecode && ecode.keyCode == 38) {
         // 按下↑箭头
         if(this.chooseIndex-1>=0){
@@ -64,9 +83,8 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang='less' scoped>
-.userlist{
-  }
-.listdom{
+#activeBox{
+  position: relative;
   max-height:200px;
   width:180px;
   overflow:auto;

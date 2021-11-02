@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <UserList id='activeBox' :showList='showList' :list='list' @aiterName='saveName' :filterName='includeName'>
+    <UserList :showList='showList' :list='list' @aiterName='saveName' :filterName='includeName' :pos='insertPos'>
       <input slot="from-item" @input='checkvalue' v-model='inputText'/>
     </UserList>
   </div>
@@ -18,6 +18,7 @@ export default {
       inputText:'',
       showList:false,
       includeName:'',
+      insertPos:-1,
       list:[{
         img:'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
         name:'王小一'
@@ -43,31 +44,32 @@ export default {
    * 实现点击别处收起
    */
   created() {
-      let body = document.querySelector('body')
-      body.addEventListener('click',(e)=>{
-      if(e.target.id === 'activeBox'){
-              this.showList = true
-      }else {
-          this.showList = false
-      }
-      },false)
+
   },
   methods: {
     checkvalue (event) {
       if (event.data === '@') {
         this.showList = true
-        // this.getCursorSite()
       }
       if(this.showList === true){
         //或者输入条件来筛选
-        //todo:需要判断是否是最后一个@     @李一一@？@张二二
-        this.includeName = this.inputText.slice(this.inputText.lastIndexOf('@')+1)
+        this.insertPos = event.target.selectionEnd
+        let str = this.inputText.slice(this.insertPos)
+        let next = str.indexOf('@');//this.inputText.slice(pos+1).indexOf('@')
+        if(next === -1){
+          this.includeName = this.inputText.slice(this.inputText.lastIndexOf('@')+1)
+        }else{
+          this.includeName = this.inputText.slice(this.insertPos+1,next)
+        }
       }
     },
     //结束输入
     saveName(name){
       this.showList = false
-      this.inputText = this.inputText.slice(0,this.inputText.lastIndexOf('@')+1)+name
+      this.includeName = ''
+      if(name){
+        this.inputText = this.inputText.slice(0,this.insertPos)+name+this.inputText.slice(this.insertPos)
+      }
     },
     getCursorSite(){
       let selection = window.getSelection()
