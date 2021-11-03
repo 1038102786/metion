@@ -1,5 +1,6 @@
 <template>
   <div class="userlist">
+    <!-- <slot name="from-item"/> -->
     <div id="activeBox" v-if="show">
       <div :class="['list', {'choose':chooseIndex==index}]" v-for='(item,index) in filterList' :key='index' @click='changeUser(index)'>
         <img class='photo' :src="item.img"/>
@@ -17,9 +18,10 @@ export default {
     filterName: function (val) {
       console.log(val)
       this.chooseIndex = 0
-      if(this.filterList.length === 0){
+      if(this.filterList.length == 0){
         this.show = false
-        this.$emit('aiterName','')
+      }else{
+        this.show = true
       }
     },
     showList: function (val) {
@@ -28,10 +30,17 @@ export default {
   },
   computed:{
     filterList:function(){
-      var self = this
+      var self = this 
       return self.list.filter(function (user) {
-         return user.name.indexOf(self.filterName) !== -1
+         return user.name.indexOf(self.onfilterName) !== -1
       })
+    },
+    onfilterName:function(){
+      var self = this 
+      if(self.filterName !== '@'&& self.filterName !== null){
+        return self.filterName
+      }
+      return ''
     }
   },
   data () {
@@ -47,7 +56,6 @@ export default {
       if(e.target.id === 'activeBox'){
           this.show = true
       }else {
-          this.show = false
           this.$emit('aiterName','')
       }
       },true)
@@ -58,14 +66,12 @@ export default {
   methods:{
     changeUser(index){
       this.chooseIndex = index
-      this.$emit('aiterName',this.filterList[this.chooseIndex].name)
+      if(this.chooseIndex < this.filterList.length){
+        this.$emit('aiterName',this.filterList[this.chooseIndex].name)
+      }
     },
     keyboard(e){
       if(!this.show)return
-      let edit = document.getElementById('activeBox')
-      console.log(edit)
-      edit.style.left = this.pos*24+'px'
-      edit.style.top = 200-edit.clientHeight+'px'
       let ecode = e || window.event || arguments.callee.caller.arguments[0]
       if (ecode && ecode.keyCode == 38) {
         // 按下↑箭头
@@ -77,10 +83,10 @@ export default {
         if(this.chooseIndex+1<this.filterList.length){
           this.chooseIndex++
         }
-      } else if(ecode && ecode.keyCode == 13){
+      } /*else if(ecode && ecode.keyCode == 13){
         // 按下enter
         this.changeUser(this.chooseIndex)
-      }
+      }*/
     }
   }
 }
@@ -93,14 +99,11 @@ export default {
 
 }
 #activeBox{
-  position: absolute;
   max-height:200px;
   width:180px;
   overflow:auto;
   box-shadow:0px 0px 7px 5px #aaa;
-  background-color: #fff;
-  left: 30px;
-  top: 0px;
+  background-color: #fff
 }
 .list{
   display:flex;
