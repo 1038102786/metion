@@ -13,7 +13,7 @@
 <script>
 export default {
   name: 'UserList',
-  props:['list','filterName','showList','pos'],
+  props:['list','filterName','showList'],
   watch: {
     filterName: function (val) {
       console.log(val)
@@ -31,17 +31,14 @@ export default {
   computed:{
     filterList:function(){
       var self = this 
+      let fileName = ''
+      if(self.filterName !== '@'&& self.filterName !== null){
+        fileName = self.filterName
+      }
       return self.list.filter(function (user) {
-         return user.name.indexOf(self.onfilterName) !== -1
+         return user.name.indexOf(fileName) !== -1
       })
     },
-    onfilterName:function(){
-      var self = this 
-      if(self.filterName !== '@'&& self.filterName !== null){
-        return self.filterName
-      }
-      return ''
-    }
   },
   data () {
     return {

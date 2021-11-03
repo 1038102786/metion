@@ -1,7 +1,8 @@
 # sp-input
 
 > A Vue.js project
-组件说明：
+组件说明：UserList 列表组件
+        myInput 输入组件
 
 需求list：
 • 输⼊@字符后可以唤起⼈员列表进⾏选择

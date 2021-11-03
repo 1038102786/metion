@@ -70,8 +70,8 @@ export default {
       this.showList = false
     },
     getPos(){
-      var selection= window.getSelection();
-      var range= selection.getRangeAt(0);
+      let selection= window.getSelection();
+      let range= selection.getRangeAt(0);
       let pos = range.getBoundingClientRect()
       if(this.insertPos == 0){
         this.insertPos = range.endOffset
