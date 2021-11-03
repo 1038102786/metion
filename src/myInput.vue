@@ -1,8 +1,7 @@
 <template>
   <div id="main">
-    <UserList :showList='showList' :list='list' @aiterName='saveName' :filterName='includeName' :pos='insertPos'>
-      <textarea class="inputdom" slot="from-item" @input='checkvalue' v-model='inputText'/>
-    </UserList>
+    <UserList :showList='showList' :list='list' @aiterName='saveName' :filterName='includeName' :pos='insertPos'/>
+    <input class="inputdom" slot="from-item" @input='checkvalue' v-model='inputText'/>
   </div>
 </template>
 
@@ -50,33 +49,18 @@ export default {
         console.log(x,y)
     },
     checkvalue (event) {
-      // console.log(event)
       if (event.data === '@') {
         this.showList = true
         this.insertPos = event.target.selectionEnd
-        // let span = document.createElement('span')
-        // span.innerHTML = this.inputText.slice(0,this.insertPos)
-        // let width =span.width
-        // console.log(span)
-        // console.log(width)
-
       }
       if(this.showList === true){
         this.getInclude()
       }
     },
-    getTextWidth() {
-      // re-use canvas object for better performance
-      // const canvas = getTextWidth.canvas || (getTextWidth.canvas = document.createElement("canvas"));
-      // const context = canvas.getContext("2d");
-      // context.font = font;
-      // const metrics = context.measureText(text);
-      // return metrics.width;
-    },
     //或者输入条件来筛选
     getInclude(){
         let str = this.inputText.slice(this.insertPos)
-        let next = str.indexOf('@');//this.inputText.slice(pos+1).indexOf('@')
+        let next = str.indexOf('@');
         if(next === -1){
           this.includeName = this.inputText.slice(this.inputText.lastIndexOf('@')+1)
         }else{
@@ -85,11 +69,11 @@ export default {
     },
     //结束输入
     saveName(name){
-      this.showList = false
-      this.includeName = ''
       if(name){
-        this.inputText = this.inputText.slice(0,this.insertPos)+name+this.inputText.slice(this.insertPos)
+        this.inputText = this.inputText.slice(0,this.insertPos)+name+this.inputText.slice(this.insertPos+this.includeName.length)
       }
+      this.includeName = ''
+      this.showList = false
     }
   }
 }
@@ -109,13 +93,12 @@ export default {
   border-radius: 6px;
   .inputdom{
     width: 80%;
-    min-height: 80%;
     outline-style: none ;
     border: 1px solid #ccc; 
     border-radius: 3px;
     padding: 14px 14px;
-    font-size: 24px;
-    margin: 30px 40px;
+    font-size: 20px;
+    margin: 200px 40px;
   }
 }
 </style>
