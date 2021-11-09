@@ -1,7 +1,7 @@
 <template>
   <div id="main" >
-      <UserList id='list' v-show="showList" :showList="showList" :list='list' @aiterName='saveName' :filterName='includeName'/>
-      <div id="editer" contenteditable="true" @input='checkvalue' ref="edit"></div>
+      <UserList id='list' v-show="showList" :showList="showList" :list='list' @select='onSelect' :filterName='includeName'/>
+      <div id="editer" contenteditable="true" @input='onInput' ref="edit"></div>
   </div>
 </template>
 
@@ -14,10 +14,14 @@ export default {
   },
   data(){
     return {
-      inputText:'',
+      rangeText:'',
       showList:false,
       includeName:'',
-      insertPos:0,
+      startPos:0,
+      endPos:0,
+      selection:null,
+      range:null,
+      selectionAnchor: null,
       list:[{
         img:'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
         name:'王小一'
@@ -41,45 +45,96 @@ export default {
   },
   mounted() {
     document.addEventListener('mousedown', this.onMouseDown);
+    document.documentElement.addEventListener('click', () => {
+      this.showList = false;
+      console.log("yin cang ")
+    });
   },
   methods: {
-    checkvalue (event) {
-      // console.log(event)
-      this.inputText = this.$refs.edit.innerHTML
+    onInput(event) {
+      this.rangeText =  this.$refs.edit.innerText
+      this.selectionAnchor = window.getSelection().anchorNode;
       if (event.data === '@') {
-        this.includeName = ''
-        this.insertPos = 0
-        this.getPos()
-        this.showList = true
+        this.initListData()
       }
       if(this.showList === true){
-        this.getPos()
-        this.includeName = event.data
+        this.getIncludeName()
+      }
+    },
+    getIncludeName(){
+      this.updateListPos()
+      let selection= window.getSelection();
+      let range= selection.getRangeAt(0);
+
+      this.endPos = range.endOffset
+      this.rangeText = String(this.selectionAnchor.wholeText)
+      if(this.rangeText.length>this.endPos){
+        this.includeName = this.rangeText.slice(this.startPos,this.endPos)
+      }else{
+        this.includeName = this.rangeText.slice(this.startPos)
+      }
+    },
+    initListData(){
+      this.selection = window.getSelection();
+      this.range= this.selection.getRangeAt(0);
+      let end  = this.range.endOffset
+      let start = this.range.startOffset
+      if(!this.expEmail(start,end)){
+        this.includeName = ''
+        this.startPos = end
+        this.endPos = end
+        this.showList = true
+        this.updateListPos()
       }
     },
     //结束输入
-    saveName(name){
-      if(name){
-        if(this.includeName !== '@'&& this.includeName !== null){
-          this.inputText = this.inputText.slice(0,this.insertPos)+name+this.inputText.slice(this.insertPos+this.includeName.length)
-        }else{
-          this.inputText = this.inputText.slice(0,this.insertPos)+name+this.inputText.slice(this.insertPos)
-        }
-        this.$refs.edit.innerHTML = this.inputText
-      }
-      this.showList = false
+    onSelect(name){
+      this.showList = false;
+      let str=`<span contenteditable="false" class="insertNode">@${name}</span>`
+      console.log(str)
+      this.deleteRange(this.startPos-1,this.endPos)
+      this.addText(str)
+      this.startPos = 0
     },
-    getPos(){
-      let selection= window.getSelection();
-      let range= selection.getRangeAt(0);
-      let pos = range.getBoundingClientRect()
-      if(this.insertPos == 0){
-        this.insertPos = range.endOffset
-      }
-      let edit = document.getElementById('editer')
+    updateListPos(){
+      let pos = this.range.getBoundingClientRect()
       let dom = document.getElementById('list')
-      dom.style.left = pos.x-edit.offsetHeight-50+'px'
-      dom.style.top =  pos.y+(200-dom.clientHeight)-edit.offsetWidth+80+'px'
+      let par = document.getElementById('main')
+      dom.style.left = pos.x-par.offsetLeft+'px'
+      dom.style.top =  pos.y-par.offsetTop+30+'px'
+    },
+    expEmail(start,end){
+      console.log(end)
+       if(end === 1 ){
+         return false
+       }
+       let ascII = this.rangeText[end-2].charCodeAt(0)
+       console.log('ascII',this.rangeText[end-2],ascII)
+       //所有字符+数字+字符的ascII在0~128
+        if (0<=ascII && ascII<=128) {
+            return true;
+        }
+        return false
+    },
+    deleteRange(start,end){
+      this.$nextTick(() => {
+        let range = document.createRange();
+        range.setStart(this.selectionAnchor, start)
+        range.setEnd(this.selectionAnchor, end)
+        range.deleteContents();
+      })
+    },
+    addText(str){
+      this.$nextTick(() => {
+        var dom = this.range.createContextualFragment(str);
+        //丢失光标解决
+        let last = dom.lastChild;
+        this.range.collapse(false);
+        this.range.insertNode(dom);
+        this.range.setEndAfter(last);
+        this.range.setStartAfter(last);
+        this.selection.addRange(this.range);
+      })
     }
   }
 }
@@ -107,6 +162,10 @@ export default {
     padding: 14px 14px;
     font-size: 24px;
     margin: 130px 40px;
+  }
+  &/deep/ .insertNode{
+    color: blue;
+    font-weight: bold;
   }
 }
 </style>

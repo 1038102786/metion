@@ -1,7 +1,7 @@
 <template>
   <div class="userlist">
     <!-- <slot name="from-item"/> -->
-    <div id="activeBox" v-if="show">
+    <div id="activeBox" v-if="show" @click="onClick">
       <div :class="['list', {'choose':chooseIndex==index}]" v-for='(item,index) in filterList' :key='index' @click='changeUser(index)'>
         <img class='photo' :src="item.img"/>
         <span class='name'>{{item.name}}</span>
@@ -46,25 +46,18 @@ export default {
       show:this.showList,
     }
   },
-  //点击别处窗口消失
-  created(){
-      let body = document.querySelector('body')
-      body.addEventListener('click',(e)=>{
-      if(e.target.id === 'activeBox'){
-          this.show = true
-      }else {
-          this.$emit('aiterName','')
-      }
-      },true)
-  },
   mounted(){
     document.onkeyup = this.keyboard;
+
   },
   methods:{
+    onClick(event) {
+      event.stopPropagation();
+    },
     changeUser(index){
       this.chooseIndex = index
       if(this.chooseIndex < this.filterList.length){
-        this.$emit('aiterName',this.filterList[this.chooseIndex].name)
+        this.$emit('select',this.filterList[this.chooseIndex].name)
       }
     },
     keyboard(e){
