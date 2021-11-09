@@ -47,7 +47,6 @@ export default {
     document.addEventListener('mousedown', this.onMouseDown);
     document.documentElement.addEventListener('click', () => {
       this.showList = false;
-      console.log("yin cang ")
     });
   },
   methods: {
@@ -91,7 +90,6 @@ export default {
     onSelect(name){
       this.showList = false;
       let str=`<span contenteditable="false" class="insertNode">@${name}</span>`
-      console.log(str)
       this.deleteRange(this.startPos-1,this.endPos)
       this.addText(str)
       this.startPos = 0
@@ -104,12 +102,11 @@ export default {
       dom.style.top =  pos.y-par.offsetTop+30+'px'
     },
     expEmail(start,end){
-      console.log(end)
        if(end === 1 ){
          return false
        }
-       let ascII = this.rangeText[end-2].charCodeAt(0)
-       console.log('ascII',this.rangeText[end-2],ascII)
+       let ascII = this.rangeText[start-2].charCodeAt(0)
+       console.log('ascII',this.rangeText[start-2],ascII)
        //所有字符+数字+字符的ascII在0~128
         if (0<=ascII && ascII<=128) {
             return true;
